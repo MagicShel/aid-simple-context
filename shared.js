@@ -3078,7 +3078,7 @@ class SimpleContextPlugin {
   // noinspection JSUnusedGlobalSymbols
   menuScenePromptHandler(text) {
     if (text === SC_UI_SHORTCUT.PREV) return this.menuSceneLabelStep()
-    else if (text === SC_UI_SHORTCUT.NEXT || this.setEntryJson(SC_DATA.YOU, text)) return this.menuSceneYouStep()
+    else if (text === SC_UI_SHORTCUT.NEXT || this.setEntryJson(SC_DATA.PROMPT, text)) return this.menuSceneYouStep()
   }
 
   menuScenePromptStep() {
