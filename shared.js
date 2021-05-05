@@ -3745,7 +3745,7 @@ class SimpleContextPlugin {
 
     // Find titles
     const trackTitles = this.titlesList.reduce((result, rule) => {
-      if (!rule.data.title || (searchRegex && !(JSON.stringify(rule.data)).match(searchRegex))) return result
+      if (!rule.data || !rule.data.title || (searchRegex && !(JSON.stringify(rule.data)).match(searchRegex))) return result
       return result.concat([`${this.getEmoji(rule, "")}${rule.data.title}`])
     }, [])
 
@@ -3786,7 +3786,7 @@ class SimpleContextPlugin {
     const { creator } = this.state
     const displayStats = []
     const isSingleton = this.configCommands.includes(creator.cmd)
-    const isCategorized = !!creator.data.category
+    const isCategorized = creator.data ? !!creator.data.category : false;
     const newline = `\n${SC_UI_ICON.BREAK}\n`
 
     if (creator.data) {
@@ -3932,3 +3932,6 @@ class SimpleContextPlugin {
   }
 }
 const simpleContextPlugin = new SimpleContextPlugin()
+
+// Unit Tests
+
