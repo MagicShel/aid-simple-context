@@ -2574,8 +2574,10 @@ class SimpleContextPlugin {
     this.initialize()
 
     // Handle entry and relationship menus and quick create character
-    // if (!modifiedText || this.menuHandler(modifiedText) || this.quickCommand(modifiedText)) return this.finalize()
-    if (!modifiedText || this.menuHandler(modifiedText)) return this.finalize()
+    if (!modifiedText ||
+        this.menuHandler(modifiedText) ||
+        (info.actionCount > 0 && this.quickCommand(modifiedText)) // Don't finalize here if this is in the prompt
+    ) return this.finalize()
 
     // Detection for multi-line commands, filter out double ups of newlines
     modifiedText = text.split("\n").reduce((result, line) => {
