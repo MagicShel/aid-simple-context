@@ -1318,7 +1318,6 @@ class SimpleContextPlugin {
       this.createEntryCommand(match)
       return true
     }
-
     return false
   }
 
@@ -2575,10 +2574,19 @@ class SimpleContextPlugin {
     this.initialize()
 
     // Handle entry and relationship menus and quick create character
-    if (!modifiedText || this.menuHandler(modifiedText) || this.quickCommand(modifiedText)) return this.finalize()
+    // if (!modifiedText || this.menuHandler(modifiedText) || this.quickCommand(modifiedText)) return this.finalize()
+    if (!modifiedText || this.menuHandler(modifiedText)) return this.finalize()
 
     // Detection for multi-line commands, filter out double ups of newlines
-    modifiedText = text.split("\n").map(l => this.commandHandler(l)).join("\n")
+    modifiedText = text.split("\n").reduce((result, line) => {
+      let cmdResult = this.commandHandler(line);
+      if (cmdResult.handled) {
+        result.push(cmdResult.text);
+      } else if (!cmdResult.handled && !this.quickCommand(line)) {
+        result.push(line);
+      }
+      return result
+    }, []).join("\n")
 
     // Cleanup for commands
     if (["\n", "\n\n"].includes(modifiedText)) modifiedText = ""
@@ -2597,12 +2605,12 @@ class SimpleContextPlugin {
     // Check if a command was inputted
     let match = SC_RE.INPUT_CMD.exec(text)
     if (match) match = match.filter(v => !!v)
-    if (!match || match.length < 2) return text
+    if (!match || match.length < 2) return {handled: false, text:text}
 
     // Check if the command was valid
     const cmd = match[1].toLowerCase()
     const params = match.length > 2 && match[2] && match[2].trim()
-    if (!this.controlCommands.includes(cmd)) return text
+    if (!this.controlCommands.includes(cmd)) return {handled: false, text:text}
 
     // Detect for Controls, handle state and perform actions (ie, hide HUD)
     if (this.systemCommands.includes(cmd)) {
@@ -2615,12 +2623,12 @@ class SimpleContextPlugin {
       else if (cmd === "show" || cmd === "hide") this.state.isHidden = (cmd === "hide")
       else if (cmd === "min" || cmd === "max") this.state.isMinimized = (cmd === "min")
       this.displayHUD()
-      return ""
+      return {handled: true, text:""}
     }
 
     // Loading pov and scene commands
     else if (this.povCommands.includes(cmd)) this.loadPov(params)
-    else if (this.loadCommands.includes(cmd)) return this.loadScene(params, !cmd.endsWith("!"))
+    else if (this.loadCommands.includes(cmd)) return {handled: true, text: this.loadScene(params, !cmd.endsWith("!"))}
     else if (this.banCommands.includes(cmd)) this.banEntry(params)
     else if (this.killCommands.includes(cmd)) this.setEntryStatus(params, SC_STATUS.DEAD)
     else if (this.reviveCommands.includes(cmd)) this.setEntryStatus(params, SC_STATUS.ALIVE)
@@ -2630,7 +2638,7 @@ class SimpleContextPlugin {
       if (cmd.endsWith("!")) this.reloadPlugin()
       this.parseContext()
     }
-    return ""
+    return {handled:true, text: ""}
   }
 
   /*
