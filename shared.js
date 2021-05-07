@@ -425,8 +425,7 @@ class SimpleContextPlugin {
       ...this.banCommands,
       ...this.killCommands,
       ...this.reviveCommands,
-      ...this.flushCommands,
-      ...this.updateCommands
+      ...this.flushCommands
     ]
     this.creatorCommands = [
       ...this.configCommands,
