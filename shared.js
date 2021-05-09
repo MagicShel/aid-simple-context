@@ -2327,7 +2327,6 @@ class SimpleContextPlugin {
     else if (this.banCommands.includes(cmd)) this.banEntry(params)
     else if (this.killCommands.includes(cmd)) this.setEntryStatus(params, SC_STATUS.DEAD)
     else if (this.reviveCommands.includes(cmd)) this.setEntryStatus(params, SC_STATUS.ALIVE)
-    else if (this.updateCommands.includes(cmd)) this.updatePlugin(!cmd.endsWith("!"))
     else if (this.flushCommands.includes(cmd)) {
       state.displayStats = []
       if (cmd.endsWith("!")) this.reloadPlugin()
